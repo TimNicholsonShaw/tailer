@@ -1,9 +1,8 @@
 import argparse
-from TailerFunctions import *
+from Tailer.TailerFunctions import * #hmm
 import os
 
-
-if __name__ == "__main__":
+def main():
     """Converts SAM/BAM files to tail files using a gtf"""
 
     # Parsing command line arguments
@@ -41,5 +40,5 @@ if __name__ == "__main__":
         print("Wrote " + pre + "_tail.csv " + " to disk.")
 
 
-
-
+if __name__ == "__main__":
+    main()

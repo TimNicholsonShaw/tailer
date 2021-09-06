@@ -1,0 +1,3 @@
+[console_scripts]
+Tailer = Tailer.Tailer:main
+
