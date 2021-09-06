@@ -240,6 +240,14 @@ def tailedReadsToTailFile(TailedReads, outLoc, threeEndThresh = 100):
             bestTails[0].threeEnd, 
             bestTails[0].tailLen, 
             bestTails[0].tailSeq])
+
+
+
+    #Sort by count
+    out = sorted(out, key=lambda x:x[1], reverse=True)
+
+        # Add header
+    out = [["Sequence", "Count", "EnsID", "Gene_Name", "Three_End", "Tail_Length", "Tail_Sequence" ]] + out
     
     with open(outLoc, 'w') as csvfile:
         writer = csv.writer(csvfile)

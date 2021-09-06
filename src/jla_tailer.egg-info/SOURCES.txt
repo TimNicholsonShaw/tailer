@@ -1,0 +1,14 @@
+LICENSE
+README.md
+pyproject.toml
+setup.py
+src/Tailer/PairwiseAligner.py
+src/Tailer/Tailer.py
+src/Tailer/TailerFunctions.py
+src/Tailer/__init__.py
+src/jla_tailer.egg-info/PKG-INFO
+src/jla_tailer.egg-info/SOURCES.txt
+src/jla_tailer.egg-info/dependency_links.txt
+src/jla_tailer.egg-info/entry_points.txt
+src/jla_tailer.egg-info/requires.txt
+src/jla_tailer.egg-info/top_level.txt

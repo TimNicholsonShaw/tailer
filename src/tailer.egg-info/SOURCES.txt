@@ -10,4 +10,5 @@ src/tailer.egg-info/PKG-INFO
 src/tailer.egg-info/SOURCES.txt
 src/tailer.egg-info/dependency_links.txt
 src/tailer.egg-info/entry_points.txt
+src/tailer.egg-info/requires.txt
 src/tailer.egg-info/top_level.txt

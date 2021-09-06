@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
-Name: tailer
-Version: 0.0.9
+Name: jla-tailer
+Version: 0.0.10
 Summary: Tool to find 3' tailing of non-coding RNAs
 Home-page: https://github.com/TimNicholsonShaw/tailer
 Author: Tim Nicholson-Shaw

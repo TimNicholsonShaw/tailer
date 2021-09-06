@@ -6,8 +6,8 @@ here = pathlib.Path(__file__).parent.resolve()
 long_description = (here / 'README.md').read_text(encoding='utf-8')
 
 setup(
-    name='tailer', 
-    version='0.0.5',
+    name='jla-tailer', 
+    version='0.0.10',
     description='Tool to find 3\' tailing of non-coding RNAs',
     long_description=long_description,
     long_description_content_type='text/markdown', 
@@ -23,6 +23,7 @@ setup(
     package_dir={'': 'src'},
     packages=find_packages(where='src'),
     python_requires='>=3.6',
+    install_requires=['pysam', 'Bio', 'gffutils'],
 
     entry_points={
         'console_scripts': [
