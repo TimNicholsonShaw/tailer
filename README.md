@@ -27,7 +27,7 @@ Tailer -e [comma separated list of EnsIDs] [FASTA/Q files]
 ```
 
 Optional arguments
-- ``-t, --threshold``
+``-t, --threshold``
 
 Any identified further than this distance in nucleotides from the mature end will be considered spurious and discarded
 
