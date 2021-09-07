@@ -15,6 +15,19 @@ pip install jla-tailer
 ```
 
 ## Usage
+
+Global alignment with a GTF annotation and SAM/BAM formatted files
 ```bash
 Tailer -a [GTF Annotation] [SAM or BAM Files]
 ```
+
+Local alignment with with FASTA/Q and specific Ensembl IDs of interest
+```bash
+Tailer -e [comma separated list of EnsIDs] [FASTA/Q files]
+```
+
+Optional arguments
+- ``-t, --threshold``
+Any identified further than this distance in nucleotides from the mature end will be considered spurious and discarded
+
+
