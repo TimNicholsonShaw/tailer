@@ -46,8 +46,8 @@ def main():
     parser = argparse.ArgumentParser(description="Convert SAM/BAM to a tail file using a gtf")
     group = parser.add_mutually_exclusive_group(required=True)
 
-    group.add_argument("-a", "--annotation", help="A GTF formatted annotation (Global Mode)", metavar="")
-    group.add_argument("-e", "--ensids", help="Ensembl IDs of genes to query (Local Mode Only)", metavar="")
+    group.add_argument("-a", "--annotation", help="A GTF formatted annotation (Global Mode Only), excludes -e", metavar="")
+    group.add_argument("-e", "--ensids", help="Ensembl IDs of genes to query (Local Mode Only), exludes -a", metavar="")
     parser.add_argument("-t", "--threshold", type=int, default=100, help="Maximum distance from mature end to be included (default=100)", metavar="")
     parser.add_argument("files", nargs="+", help="SAM or BAM formatted files | FASTA/Q for local mode")
 
