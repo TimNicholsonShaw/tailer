@@ -48,7 +48,7 @@ def main():
 
     group.add_argument("-a", "--annotation", help="A GTF formatted annotation (Global Mode)", metavar="")
     group.add_argument("-e", "--ensids", help="Ensembl IDs of genes to query (Local Mode Only)", metavar="")
-    parser.add_argument("-t", "--threshold", type=int, default=100, help="Maximum distance from mature end to be included", metavar="")
+    parser.add_argument("-t", "--threshold", type=int, default=100, help="Maximum distance from mature end to be included (default=100)", metavar="")
     parser.add_argument("files", nargs="+", help="SAM or BAM formatted files | FASTA/Q for local mode")
 
     args = parser.parse_args()
