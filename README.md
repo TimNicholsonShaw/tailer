@@ -5,6 +5,8 @@
 - ``pysam``
 - ``Bio``
 - ``gffuitls``
+- ``requests``
+- ``tqdm``
 
 ## Installation
 
@@ -14,5 +16,5 @@ pip install jla-tailer
 
 ## Usage
 ```bash
-Tailer -a \[GTF Annotation\] \[SAM or BAM Files\]
+Tailer -a [GTF Annotation] [SAM or BAM Files]
 ```

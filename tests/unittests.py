@@ -91,7 +91,7 @@ class TestTailer(unittest.TestCase):
 
         os.remove(currentdir+"/test.db")
 
-class TestBlaster(unittest.TestCase):
+class TestLocal(unittest.TestCase):
     def setUp(self):
         pass
     def tearDown(self):

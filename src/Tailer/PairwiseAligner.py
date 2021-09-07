@@ -4,7 +4,6 @@ from Bio.Blast import NCBIXML
 from Bio import SeqIO
 
 from requests.api import get # Used to parse XML output from blast
-from Ensembler import getEnsemblSeqs
 import subprocess, os, sys, time, requests, json
 from tqdm import tqdm
  
@@ -83,7 +82,7 @@ def alignBlastDB(query, db, outfile):
 
     return True
 
-def BlastResultsParser(XML_results, reads):
+def BlastResultsParser(XML_results, reads, expanded_3prime=50):
     """
     Parses XML output from blastn
     Add data to reads object
@@ -100,10 +99,12 @@ def BlastResultsParser(XML_results, reads):
         query_end = record.alignments[0].hsps[0].query_end
         target_len = record.alignments[0].length
 
-        reads[idx].threePrime = sbjct_end - target_len
+        reads[idx].threePrime = sbjct_end - target_len + expanded_3prime
         reads[idx].tailLen = query_len - query_end
         reads[idx].tailSeq = reads[idx].seq[query_end:]
-        reads[idx].gene = record.alignments[0].title
+        reads[idx].gene = record.alignments[0].title[record.alignments[0].title.rfind("|")+3:]
+
+    os.remove(XML_results)
     
     return reads
 
@@ -111,13 +112,15 @@ def tailbuildr(reads, out_loc):
     """
     creates a .tail file
     """
+    reads = sorted(reads, key=lambda x: x.count, reverse=True)
+
     with open(out_loc, "w") as csvfile:
         writer = csv.writer(csvfile)
-        writer.writerow(['Sequence', "#Unique reads", "Gene", "3'end", "Tail length", "Tail seq", 'Notes'])
+        writer.writerow(["Sequence", "Count", "EnsID", "Gene_Name", "Three_End", "Tail_Length", "Tail_Sequence" ])
 
         for read in reads:
             if read.gene:
-                writer.writerow([read.seq, read.count, read.gene, read.threePrime, read.tailLen, read.tailSeq, read.notes])
+                writer.writerow([read.seq, read.count, read.gene,"NA", read.threePrime, read.tailLen, read.tailSeq])
     
 def getEnsemblSeqs(ID_list, expand_3prime=50):
   server = "https://rest.ensembl.org"
@@ -142,30 +145,29 @@ def getEnsemblSeqs(ID_list, expand_3prime=50):
 
   return out
 
-if __name__=="__main__":
+def localAligner(args):
     tempDir = tempfile.TemporaryDirectory() #Create temporary directory that will be deleted on exit
 
-    ##################test values##################################
-    EIDs = ["ENSG00000206652"]
-    test_fastq = "/Users/tim/Google Drive/Grad School/PipelinePaper/ReaData/U1IAA-1_2.fastq"
-    test_out = "/Users/tim/Google Drive/Grad School/PipelinePaper/ReaData/temp.txt"
-    test_final = "/Users/tim/Google Drive/Grad School/PipelinePaper/ReaData/U1IAA-1_2.tail.csv"
-    ######################################
-
-
+    # temporary locations for query and database
     queryFile = tempDir.name + "/query.fasta"
     dbFile = tempDir.name + "db.fa"
 
-    reads = parseFASTQ(test_fastq)
-    print(len(reads))
-    queryFormatter(reads, queryFile)
-    buildDBFromEID(EIDs, dbFile)
-    print("aligning...")
-    alignBlastDB(queryFile, dbFile, test_out)
+    args.eids = args.ensids.split(",")
 
-    print("parsing...")
-    reads = BlastResultsParser(test_out, reads)
+    # Downloads fasta sequences from ensembl and creates BLASTable database
+    buildDBFromEID(args.eids, dbFile) 
 
-    tailbuildr(reads, test_final)
+    for file in args.files:
+        pre, ext = os.path.splitext(file) #Get extension and filename
+        reads = parseFASTQ(file)
+
+        queryFormatter(reads, queryFile) # Formats properly for a BLAST search
+
+        print("Aligning...")
+        alignBlastDB(queryFile, dbFile, pre+"_temp.xml")
+        print("Parsing...")
+        reads = BlastResultsParser(pre+"_temp.xml", reads)
+
+        tailbuildr(reads, pre+"_tails.csv")
 
 

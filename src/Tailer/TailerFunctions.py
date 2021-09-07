@@ -94,8 +94,7 @@ class TailedRead():
         for tail in self.tails:
             if abs(tail.threeEnd) == best:
                 out.append(tail)
-        return out
-    
+        return out   
 
 def reverse_complement(seq): 
     """generates a reverse complement of a sequence
@@ -110,9 +109,12 @@ def getHandleOnIndexedBam(samOrBamFile):
     pre, ext = os.path.splitext(samOrBamFile) #Get extension and filename
     
     # Whether or not it should read the file in binary format
-    if ext == ".sam":
+    if ext.lower() ==".fasta" or ext.lower() == ".fastq":
+        raise Exception("FASTA/FASTQ can only be used in local mode, try passing ensids with the -e flag.")
+
+    if ext.lower() == ".sam":
         return pysam.AlignmentFile(samOrBamFile, 'r')
-    elif ext == ".bam":
+    elif ext.lower() == ".bam":
         return pysam.AlignmentFile(samOrBamFile, 'rb')
 
     else:
@@ -254,7 +256,3 @@ def tailedReadsToTailFile(TailedReads, outLoc, threeEndThresh = 100):
 
         for line in out:
             writer.writerow(line)
-
-
-
-    

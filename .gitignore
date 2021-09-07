@@ -1,0 +1,5 @@
+dist/
+src/jla_tailer.egg-info/
+src/Tailer/__pycache__/
+tests/*.csv
+tests/.DS_Store

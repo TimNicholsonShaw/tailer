@@ -7,7 +7,7 @@ long_description = (here / 'README.md').read_text(encoding='utf-8')
 
 setup(
     name='jla-tailer', 
-    version='0.0.11',
+    version='0.0.12',
     description='Tool to find 3\' tailing of non-coding RNAs',
     long_description=long_description,
     long_description_content_type='text/markdown', 
@@ -23,7 +23,7 @@ setup(
     package_dir={'': 'src'},
     packages=find_packages(where='src'),
     python_requires='>=3.6',
-    install_requires=['pysam', 'Bio', 'gffutils'],
+    install_requires=['pysam', 'Bio', 'gffutils', "tqdm", "requests"],
 
     entry_points={
         'console_scripts': [
