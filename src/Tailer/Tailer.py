@@ -49,7 +49,10 @@ def main():
     group.add_argument("-a", "--annotation", help="A GTF formatted annotation (Global Mode Only), excludes -e", metavar="")
     group.add_argument("-e", "--ensids", help="Ensembl IDs of genes to query (Local Mode Only), exludes -a", metavar="")
     parser.add_argument("-t", "--threshold", type=int, default=100, help="Maximum distance from mature end to be included (default=100)", metavar="")
+    parser.add_argument("-r", "--rev_comp", default=False, type=bool, help="Reverse complement reads [Local only]", metavar="")
+    parser.add_argument("-x", "--trim", default=0, type=int, help="trim off x nucleotides from end [local only]", metavar="")
     parser.add_argument("files", nargs="+", help="SAM or BAM formatted files | FASTA/Q for local mode")
+
 
     args = parser.parse_args()
 

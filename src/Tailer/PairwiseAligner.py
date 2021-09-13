@@ -8,6 +8,10 @@ import subprocess, os, sys, time, requests, json
 from tqdm import tqdm
  
 import tempfile, csv
+try:
+    from Tailer.TailerFunctions import reverse_complement
+except:
+    from TailerFunctions import reverse_complement
 
 class TailedRead:
 
@@ -23,6 +27,12 @@ class TailedRead:
         # Has the read been tailed
         if threePrime==None: self.tailed = False
         else: self.tailed = True
+
+    def rev_comp(self):
+        self.seq = reverse_complement(self.seq)
+
+    def trim(self, n: int):
+        self.seq = self.seq[:-n]
 
 def parseFASTQ(fastq):
     """
@@ -55,13 +65,15 @@ def buildDBFromEID(EID_list, tempfile="temp.fasta"):
 
     subprocess.call(["makeblastdb", "-in", tempfile, "-dbtype", "nucl"])
 
-def queryFormatter(reads, tempfile="temp_query.fasta"):
+def queryFormatter(reads, tempfile="temp_query.fasta", rev_comp=False, trim=0):
     """
     create a fasta formatted temporary file
     """
     with open(tempfile, 'w') as handle:
         n=0
         for read in reads:
+            if rev_comp: read.rev_comp() # Think I need to add this for gene-specific stuff, flips seq in place
+            if trim: read.trim(trim) # trim off barcode
             handle.write(">" + str(n) + ";" + str(read.count) + "\n")
             handle.write(read.seq + "\n")
             n+=1
@@ -120,7 +132,7 @@ def tailbuildr(reads, out_loc):
 
         for read in reads:
             if read.gene:
-                writer.writerow([read.seq, read.count, read.gene,"NA", read.threePrime, read.tailLen, read.tailSeq])
+                writer.writerow([read.seq, read.count, read.gene,"local", read.threePrime, read.tailLen, read.tailSeq])
     
 def getEnsemblSeqs(ID_list, expand_3prime=50):
   server = "https://rest.ensembl.org"
@@ -161,7 +173,7 @@ def localAligner(args):
         pre, ext = os.path.splitext(file) #Get extension and filename
         reads = parseFASTQ(file)
 
-        queryFormatter(reads, queryFile) # Formats properly for a BLAST search
+        queryFormatter(reads, queryFile, rev_comp=args.rev_comp, trim=args.trim) # Formats properly for a BLAST search
 
         print("Aligning...")
         alignBlastDB(queryFile, dbFile, pre+"_temp.xml")
