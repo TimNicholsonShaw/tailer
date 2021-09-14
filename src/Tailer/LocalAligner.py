@@ -7,7 +7,7 @@ from requests.api import get # Used to parse XML output from blast
 import subprocess, os, sys, time, requests, json
 from tqdm import tqdm
  
-import tempfile, csv
+import tempfile, csv #I'm doing something wrong here
 try:
     from Tailer.TailerFunctions import reverse_complement
 except:
@@ -77,13 +77,6 @@ def queryFormatter(reads, tempfile="temp_query.fasta", rev_comp=False, trim=0):
             handle.write(">" + str(n) + ";" + str(read.count) + "\n")
             handle.write(read.seq + "\n")
             n+=1
-
-def checkOrMakeBlastDB(query, db):
-    """
-    Check if a properly formatted blast db exists
-    If it doesn't it creates one using the makeblastdb command
-    """
-    pass
 
 def alignBlastDB(query, db, outfile):
     """
