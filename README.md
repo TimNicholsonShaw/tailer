@@ -23,12 +23,16 @@ Tailer -a [GTF Annotation] [SAM or BAM Files]
 
 Local alignment with with FASTA/Q and specific Ensembl IDs of interest
 ```bash
-Tailer -e [comma separated list of EnsIDs] [FASTA/Q files]
+Tailer -e [comma separated list of EnsIDs no spaces] [FASTA/Q files]
 ```
 
 Optional arguments
 
 * ``-t, --threshold [int, default=100]``
     - Any alignment identified further than this distance in nucleotides from the mature end will be considered spurious and discarded
+* ``-x, --trim [int, default=0]``
+    - Helper for local mode only, can remove X nucleotides from adapter on the 3' end
+* ``-r, --rev_comp``
+    - Helper for local mode only. If set, will reverse complement the reads which is necessary for the Lykke-Andersen pipeline
 
 
