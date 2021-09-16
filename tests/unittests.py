@@ -91,7 +91,12 @@ class TestTailer(unittest.TestCase):
 
         os.remove(currentdir+"/test.db")
 
-class TestLocal(unittest.TestCase):
+class TestLocalEnsID(unittest.TestCase):
+    def setUp(self):
+        pass
+    def tearDown(self):
+        pass
+class TestLocalFASTA(unittest.TestCase):
     def setUp(self):
         pass
     def tearDown(self):
