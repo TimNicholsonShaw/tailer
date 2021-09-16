@@ -21,9 +21,10 @@ Global alignment with a GTF annotation and SAM/BAM formatted files
 Tailer -a [GTF Annotation] [SAM or BAM Files]
 ```
 
-Local alignment with with FASTA/Q and specific Ensembl IDs of interest
+Local alignment with with FASTA/Q and specific Ensembl IDs of interest or reference fasta
 ```bash
 Tailer -e [comma separated list of EnsIDs no spaces] [FASTA/Q files]
+Tailer -f fasta_reference_file.fasta [FASTA/Q files]
 ```
 
 Optional arguments
