@@ -34,12 +34,8 @@ def runGlobal(args):
 
         print("Wrote " + pre + "_tail.csv " + " to disk.")
 
-def runLocal(args):
-    print("Running Locally")
-    la.localAligner(args)
-
 def main():
-    """Converts SAM/BAM files to tail files using a gtf"""
+    """Handles argument parsing and run selection"""
 
     # Parsing command line arguments
     parser = argparse.ArgumentParser(description="Convert SAM/BAM to a tail file using a gtf")
@@ -47,6 +43,7 @@ def main():
 
     group.add_argument("-a", "--annotation", help="A GTF formatted annotation (Global Mode Only), excludes -e", metavar="")
     group.add_argument("-e", "--ensids", help="Ensembl IDs of genes to query, comma separated, no space (Local Mode Only), excludes -a", metavar="")
+    group.add_argument("-f", "--fasta", help="FASTA file to act as a reference [Local Only]", metavar="")
     parser.add_argument("-t", "--threshold", type=int, default=100, help="Maximum distance from mature end to be included (default=100)", metavar="")
     parser.add_argument("-r", "--rev_comp", action="store_true",help="Reverse complement reads [Helper for Local only]")
     parser.add_argument("-x", "--trim", default=0, type=int, help="trim off x nucleotides from end [Helper for local only]", metavar="")
@@ -61,7 +58,11 @@ def main():
 
     elif args.ensids:
         print("Running in local mode")
-        runLocal(args)
+        la.localAligner(args)
+
+    elif args.fasta:
+        print("Running in local mode with reference FASTA")
+        la.localFastaAligner(args)
 
     else:
         raise Exception("Something has gone bafflingly wrong with your arguments. This shouldn't be possible. Kudos.")

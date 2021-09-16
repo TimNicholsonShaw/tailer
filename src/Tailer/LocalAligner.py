@@ -87,7 +87,7 @@ def alignBlastDB(query, db, outfile):
 
     return True
 
-def BlastResultsParser(XML_results, reads, expanded_3prime=50):
+def BlastResultsParser(XML_results, reads, expanded_3prime=50, fullName=False):
     """
     Parses XML output from blastn
     Add data to reads object
@@ -107,7 +107,11 @@ def BlastResultsParser(XML_results, reads, expanded_3prime=50):
         reads[idx].threePrime = sbjct_end - target_len + expanded_3prime
         reads[idx].tailLen = query_len - query_end
         reads[idx].tailSeq = reads[idx].seq[query_end:]
-        reads[idx].gene = record.alignments[0].title[record.alignments[0].title.rfind("|")+3:]
+        if fullName:
+             reads[idx].gene = record.alignments[0].title
+        else:
+            reads[idx].gene = record.alignments[0].title[record.alignments[0].title.rfind("|")+3:]
+
 
     os.remove(XML_results)
     
@@ -176,3 +180,26 @@ def localAligner(args):
         tailbuildr(reads, pre+"_tails.csv")
 
 
+def localFastaAligner(args):
+    print('woo')
+    tempDir = tempfile.TemporaryDirectory() #Create temporary directory that will be deleted on exit
+
+    # temporary locations for query and database
+    queryFile = tempDir.name + "/query.fasta"
+
+    # Build blast db from given reference
+    subprocess.call(["makeblastdb", "-in", args.fasta, "-dbtype", "nucl"])
+
+    for file in args.files:
+        pre, ext = os.path.splitext(file) #Get extension and filename
+        reads = parseFASTQ(file)
+
+        queryFormatter(reads, queryFile, rev_comp=args.rev_comp, trim=args.trim) # Formats properly for a BLAST search
+
+        print("Aligning...")
+        alignBlastDB(queryFile, args.fasta, pre+"_temp.xml")
+        print("Parsing...")
+        reads = BlastResultsParser(pre+"_temp.xml", reads, fullName=True, expanded_3prime=0)
+
+        tailbuildr(reads, pre+"_tails.csv")
+    
