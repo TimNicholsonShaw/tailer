@@ -90,7 +90,6 @@ class TestTailer(unittest.TestCase):
             os.remove(file)
 
         os.remove(currentdir+"/test.db")
-
 class TestLocalEnsID(unittest.TestCase):
     def setUp(self):
         pass
