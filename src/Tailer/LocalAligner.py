@@ -134,9 +134,9 @@ def tailbuildr(reads, out_loc, seq_out=False):
         for read in reads:
             if read.gene:
                 if seq_out:
-                    writer.writerow([read.seq, read.count, read.gene,"local", read.threePrime, read.tailLen, read.tailSeq])
+                    writer.writerow([read.seq, read.count, read.gene,"local", read.threePrime+read.tailLen, read.tailLen, read.tailSeq])
                 else:
-                    writer.writerow([read.count, read.gene,"local", read.threePrime, read.tailLen, read.tailSeq])
+                    writer.writerow([read.count, read.gene,"local", read.threePrime+read.tailLen, read.tailLen, read.tailSeq])
 
     
 def getEnsemblSeqs(ID_list, expand_3prime=50):

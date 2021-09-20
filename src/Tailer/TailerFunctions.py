@@ -234,7 +234,7 @@ def tailedReadsToTailFile(TailedReads, outLoc, threeEndThresh = 100, seq_out=Fal
                 out.append([ tailedRead.count,
                 ensIDs, 
                 geneNames, 
-                bestTails[0].threeEnd, 
+                bestTails[0].threeEnd + bestTails[0].tailLen, 
                 bestTails[0].tailLen, 
                 bestTails[0].tailSeq])
 
@@ -248,7 +248,7 @@ def tailedReadsToTailFile(TailedReads, outLoc, threeEndThresh = 100, seq_out=Fal
                 tailedRead.count,
                 ensIDs, 
                 geneNames, 
-                bestTails[0].threeEnd, 
+                bestTails[0].threeEnd + bestTails[0].tailLen, 
                 bestTails[0].tailLen, 
                 bestTails[0].tailSeq])
 
