@@ -30,7 +30,7 @@ def runGlobal(args):
         tailedReads = tf.makeTailedReadsDict(aln_dict, db)
 
         # write to file
-        tf.tailedReadsToTailFile(tailedReads, pre + "_tail.csv", threeEndThresh=args.threshold)
+        tf.tailedReadsToTailFile(tailedReads, pre + "_tail.csv", threeEndThresh=args.threshold, seq_out=args.sequence)
 
         print("Wrote " + pre + "_tail.csv " + " to disk.")
 
@@ -47,10 +47,12 @@ def main():
     parser.add_argument("-t", "--threshold", type=int, default=100, help="Maximum distance from mature end to be included (default=100)", metavar="")
     parser.add_argument("-r", "--rev_comp", action="store_true",help="Reverse complement reads [Helper for Local only]")
     parser.add_argument("-x", "--trim", default=0, type=int, help="trim off x nucleotides from end [Helper for local only]", metavar="")
+    parser.add_argument("-s", "--sequence", action="store_true", help="for debugging, outputs nucleotide sequences to file")
     parser.add_argument("files", nargs="+", help="SAM or BAM formatted files | FASTA/Q for local mode")
 
 
     args = parser.parse_args()
+
     
     if args.annotation:
         print("Running in global mode")

@@ -117,7 +117,7 @@ def BlastResultsParser(XML_results, reads, expanded_3prime=50, fullName=False):
     
     return reads
 
-def tailbuildr(reads, out_loc):
+def tailbuildr(reads, out_loc, seq_out=False):
     """
     creates a .tail file
     """
@@ -125,11 +125,19 @@ def tailbuildr(reads, out_loc):
 
     with open(out_loc, "w") as csvfile:
         writer = csv.writer(csvfile)
-        writer.writerow(["Sequence", "Count", "EnsID", "Gene_Name", "Three_End", "Tail_Length", "Tail_Sequence" ])
+        if seq_out:
+            writer.writerow(["Sequence", "Count", "EnsID", "Gene_Name", "Three_End", "Tail_Length", "Tail_Sequence" ])
+        else:
+            writer.writerow(["Count", "EnsID", "Gene_Name", "Three_End", "Tail_Length", "Tail_Sequence" ])
+
 
         for read in reads:
             if read.gene:
-                writer.writerow([read.seq, read.count, read.gene,"local", read.threePrime, read.tailLen, read.tailSeq])
+                if seq_out:
+                    writer.writerow([read.seq, read.count, read.gene,"local", read.threePrime, read.tailLen, read.tailSeq])
+                else:
+                    writer.writerow([read.count, read.gene,"local", read.threePrime, read.tailLen, read.tailSeq])
+
     
 def getEnsemblSeqs(ID_list, expand_3prime=50):
   server = "https://rest.ensembl.org"
@@ -181,7 +189,6 @@ def localAligner(args):
 
 
 def localFastaAligner(args):
-    print('woo')
     tempDir = tempfile.TemporaryDirectory() #Create temporary directory that will be deleted on exit
 
     # temporary locations for query and database

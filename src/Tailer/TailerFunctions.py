@@ -206,7 +206,7 @@ def makeTailedReadsDict(alignment_dict, gtf_db):
 
     return out_dict
 
-def tailedReadsToTailFile(TailedReads, outLoc, threeEndThresh = 100):
+def tailedReadsToTailFile(TailedReads, outLoc, threeEndThresh = 100, seq_out=False):
     """Writes TailedReads object to file
     
     :param TailedReads          Previously generated TailedReads object
@@ -230,26 +230,42 @@ def tailedReadsToTailFile(TailedReads, outLoc, threeEndThresh = 100):
             if bestTails[0].threeEnd < -threeEndThresh: continue
             elif bestTails[0].threeEnd > threeEndThresh: continue
 
-            if bestTails[0].is_reverse:
-                pass
-            else:
-                seq = reverse_complement(seq) # Need to rev_comp for illumina reads
+            if not seq_out: #Won't add sequence information without sequence flag
+                out.append([ tailedRead.count,
+                ensIDs, 
+                geneNames, 
+                bestTails[0].threeEnd, 
+                bestTails[0].tailLen, 
+                bestTails[0].tailSeq])
 
-            out.append([seq, 
-            tailedRead.count,
-            ensIDs, 
-            geneNames, 
-            bestTails[0].threeEnd, 
-            bestTails[0].tailLen, 
-            bestTails[0].tailSeq])
+            else:
+                if bestTails[0].is_reverse:
+                    pass
+                else:
+                    seq = reverse_complement(seq) # Need to rev_comp for illumina reads
+
+                out.append([seq, 
+                tailedRead.count,
+                ensIDs, 
+                geneNames, 
+                bestTails[0].threeEnd, 
+                bestTails[0].tailLen, 
+                bestTails[0].tailSeq])
+
 
 
 
     #Sort by count
-    out = sorted(out, key=lambda x:x[1], reverse=True)
+    key_column = 0
+    if seq_out: key_column = 2
+    out = sorted(out, key=lambda x:x[key_column], reverse=True)
 
-        # Add header
-    out = [["Sequence", "Count", "EnsID", "Gene_Name", "Three_End", "Tail_Length", "Tail_Sequence" ]] + out
+    # Add header
+    if seq_out:
+        out = [["Sequence", "Count", "EnsID", "Gene_Name", "Three_End", "Tail_Length", "Tail_Sequence" ]] + out
+    else:
+        out = [["Count", "EnsID", "Gene_Name", "Three_End", "Tail_Length", "Tail_Sequence" ]] + out
+
     
     with open(outLoc, 'w') as csvfile:
         writer = csv.writer(csvfile)
