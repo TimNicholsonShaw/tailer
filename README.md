@@ -35,5 +35,9 @@ Optional arguments
     - Helper for local mode only, can remove X nucleotides from adapter on the 3' end
 * ``-r, --rev_comp``
     - Helper for local mode only. If set, will reverse complement the reads which is necessary for the Lykke-Andersen pipeline
+* ``-f, --fasta``
+    - Use a fasta file as a reference instead of building one from ensembl IDs (Local Only)
+* ``-s, --sequence``
+    - Output sequence in the tail file. Useful for debugging.
 
 
