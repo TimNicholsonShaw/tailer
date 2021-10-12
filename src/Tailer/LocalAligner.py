@@ -9,30 +9,52 @@ from tqdm import tqdm
  
 import tempfile, csv #I'm doing something wrong here
 try:
-    from Tailer.TailerFunctions import reverse_complement
+    import Tailer.TailerFunctions as tf
 except:
-    from TailerFunctions import reverse_complement
+    import TailerFunctions as tf
 
-class TailedRead:
+class LocalTail:
+    def __init__(self, threePrime=None, tailLen=None, tailSeq=None, gene=None):
+        self.threePrime = threePrime
+        self.tailLen = tailLen
+        self.tailSeq = tailSeq
+        self.gene = gene
+    
+class LocalTailedRead:
 
-    def __init__(self, seq, count=1, threePrime=None, tailLen=None, tailSeq=None, notes="", gene=""):
+    def __init__(self, seq, count):#, threePrime=None, tailLen=None, tailSeq=None, notes="", gene=""):
         self.seq = seq # read sequence
         self.count = count # how many of them we've seen
-        self.threePrime = threePrime # where the 3' end maps
-        self.tailLen = tailLen # How long the tail is
-        self.tailSeq = tailSeq # what is the sequence of that tail
-        self.notes = notes
-        self.gene = gene
+        #self.threePrime = threePrime # where the 3' end maps
+        #self.tailLen = tailLen # How long the tail is
+        #self.tailSeq = tailSeq # what is the sequence of that tail
+        #self.notes = notes
+        #self.gene = gene
 
         # Has the read been tailed
-        if threePrime==None: self.tailed = False
-        else: self.tailed = True
+        #if threePrime==None: self.tailed = False
+        #else: self.tailed = True
+        self.potential_tails=[]
 
     def rev_comp(self):
-        self.seq = reverse_complement(self.seq)
+        self.seq = tf.reverse_complement(self.seq)
 
     def trim(self, n: int):
         self.seq = self.seq[:-n]
+
+    def addAlignment(self, localTail):
+        self.potential_tails.append(localTail)
+    def pickBestAlignment(self):
+        if len(self.potential_tails) == 0: return None
+
+        best = min([abs(x.threePrime) for x in self.potential_tails]) # Best is tail that's closest to mature end
+
+        out =[]
+
+        for tail in self.potential_tails:
+            if abs(tail.threePrime) == best:
+                out.append(tail)
+        return out   
 
 def parseFASTQ(fastq):
     """
@@ -48,7 +70,7 @@ def parseFASTQ(fastq):
 
     reads = []
     for key, value in tqdm(temp_dict.items()):
-        reads.append(TailedRead(key, count=value))
+        reads.append(LocalTailedRead(key, count=value))
 
     return reads
 
@@ -83,7 +105,7 @@ def alignBlastDB(query, db, outfile):
     Aligns query to properly formatted blast db
     Outputs a temporary XML file
     """
-    subprocess.call(["blastn", "-db", db, "-query", query, "-out", outfile, "-outfmt", "5", '-max_target_seqs', '1'])
+    subprocess.call(["blastn", "-db", db, "-query", query, "-out", outfile, "-outfmt", "5", '-max_target_seqs', '50'])
 
     return True
 
@@ -96,21 +118,24 @@ def BlastResultsParser(XML_results, reads, expanded_3prime=50, fullName=False):
 
     for record in tqdm(records):
         if len(record.alignments) == 0: continue # skip if there are no alignments
+        for i in range(len(record.alignments)):
+            query_len = record.query_length
+            idx = int(record.query.split(";")[0])
 
-        query_len = record.query_length
-        idx = int(record.query.split(";")[0])
+            sbjct_end = record.alignments[i].hsps[0].sbjct_end
+            query_end = record.alignments[i].hsps[0].query_end
+            target_len = record.alignments[i].length
 
-        sbjct_end = record.alignments[0].hsps[0].sbjct_end
-        query_end = record.alignments[0].hsps[0].query_end
-        target_len = record.alignments[0].length
+            threePrime = sbjct_end - target_len + expanded_3prime
+            tailLen = query_len - query_end
+            tailSeq = reads[idx].seq[query_end:]
 
-        reads[idx].threePrime = sbjct_end - target_len + expanded_3prime
-        reads[idx].tailLen = query_len - query_end
-        reads[idx].tailSeq = reads[idx].seq[query_end:]
-        if fullName:
-             reads[idx].gene = record.alignments[0].title
-        else:
-            reads[idx].gene = record.alignments[0].title[record.alignments[0].title.rfind("|")+3:]
+            if fullName:
+                gene_name = record.alignments[i].title
+            else:
+                gene_name = record.alignments[i].title[record.alignments[0].title.rfind("|")+3:]
+
+            reads[idx].addAlignment(LocalTail(threePrime=threePrime, tailLen=tailLen, tailSeq=tailSeq, gene=gene_name))
 
 
     os.remove(XML_results)
@@ -132,11 +157,17 @@ def tailbuildr(reads, out_loc, seq_out=False):
 
 
         for read in reads:
-            if read.gene:
+            if read.potential_tails:
+                bestTail = read.pickBestAlignment()
+                out_name = [x.gene for x in bestTail]
+                out_name="|".join(out_name)
+
+
                 if seq_out:
-                    writer.writerow([read.seq, read.count, read.gene,"local", read.threePrime+read.tailLen, read.tailLen, read.tailSeq])
+                    writer.writerow([read.seq, read.count, out_name, out_name, bestTail[0].threePrime+bestTail[0].tailLen, bestTail[0].tailLen, bestTail[0].tailSeq])
                 else:
-                    writer.writerow([read.count, read.gene,"local", read.threePrime+read.tailLen, read.tailLen, read.tailSeq])
+                    writer.writerow([read.count, out_name, out_name, bestTail[0].threePrime+bestTail[0].tailLen, bestTail[0].tailLen, bestTail[0].tailSeq])
+
 
     
 def getEnsemblSeqs(ID_list, expand_3prime=50):
