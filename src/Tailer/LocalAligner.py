@@ -47,12 +47,12 @@ class LocalTailedRead:
     def pickBestAlignment(self):
         if len(self.potential_tails) == 0: return None
 
-        best = min([abs(x.threePrime) for x in self.potential_tails]) # Best is tail that's closest to mature end
+        best = max([x.threePrime for x in self.potential_tails]) # Best is tail that's closest to mature end
 
         out =[]
 
         for tail in self.potential_tails:
-            if abs(tail.threePrime) == best:
+            if tail.threePrime == best:
                 out.append(tail)
         return out   
 
