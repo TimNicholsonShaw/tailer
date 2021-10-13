@@ -121,7 +121,6 @@ def BlastResultsParser(XML_results, reads, expanded_3prime=50, fullName=False):
         for i in range(len(record.alignments)):
             query_len = record.query_length
             idx = int(record.query.split(";")[0])
-
             sbjct_end = record.alignments[i].hsps[0].sbjct_end
             query_end = record.alignments[i].hsps[0].query_end
             target_len = record.alignments[i].length
@@ -151,9 +150,9 @@ def tailbuildr(reads, out_loc, seq_out=False):
     with open(out_loc, "w") as csvfile:
         writer = csv.writer(csvfile)
         if seq_out:
-            writer.writerow(["Sequence", "Count", "EnsID", "Gene_Name", "Three_End", "Tail_Length", "Tail_Sequence" ])
+            writer.writerow(["Sequence", "Count", "EnsID", "Gene_Name", "End_Position", "Tail_Length", "Tail_Sequence" ])
         else:
-            writer.writerow(["Count", "EnsID", "Gene_Name", "Three_End", "Tail_Length", "Tail_Sequence" ])
+            writer.writerow(["Count", "EnsID", "Gene_Name", "End_Position", "Tail_Length", "Tail_Sequence" ])
 
 
         for read in reads:

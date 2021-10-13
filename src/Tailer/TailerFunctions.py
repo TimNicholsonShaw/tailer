@@ -262,9 +262,9 @@ def tailedReadsToTailFile(TailedReads, outLoc, threeEndThresh = 100, seq_out=Fal
 
     # Add header
     if seq_out:
-        out = [["Sequence", "Count", "EnsID", "Gene_Name", "Three_End", "Tail_Length", "Tail_Sequence" ]] + out
+        out = [["Sequence", "Count", "EnsID", "Gene_Name", "End_Position", "Tail_Length", "Tail_Sequence" ]] + out
     else:
-        out = [["Count", "EnsID", "Gene_Name", "Three_End", "Tail_Length", "Tail_Sequence" ]] + out
+        out = [["Count", "EnsID", "Gene_Name", "End_Position", "Tail_Length", "Tail_Sequence" ]] + out
 
     
     with open(outLoc, 'w') as csvfile:
