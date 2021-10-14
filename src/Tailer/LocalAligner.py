@@ -14,11 +14,12 @@ except:
     import TailerFunctions as tf
 
 class LocalTail:
-    def __init__(self, threePrime=None, tailLen=None, tailSeq=None, gene=None):
+    def __init__(self, threePrime=None, tailLen=None, tailSeq=None, gene=None, score=None):
         self.threePrime = threePrime
         self.tailLen = tailLen
         self.tailSeq = tailSeq
         self.gene = gene
+        self.score = score
     
 class LocalTailedRead:
 
@@ -47,7 +48,7 @@ class LocalTailedRead:
     def pickBestAlignment(self):
         if len(self.potential_tails) == 0: return None
 
-        best = max([x.threePrime for x in self.potential_tails]) # Best is tail that's closest to mature end
+        best = min([x.threePrime for x in self.potential_tails]) # Best are the ones with the best blast score
 
         out =[]
 
@@ -124,24 +125,30 @@ def BlastResultsParser(XML_results, reads, expanded_3prime=50, fullName=False):
             sbjct_end = record.alignments[i].hsps[0].sbjct_end
             query_end = record.alignments[i].hsps[0].query_end
             target_len = record.alignments[i].length
+            score = record.alignments[i].hsps[0].score
 
-            threePrime = sbjct_end - target_len + expanded_3prime
+            threePrime = target_len - sbjct_end - expanded_3prime
             tailLen = query_len - query_end
             tailSeq = reads[idx].seq[query_end:]
+            #test code
+            aln = record.alignments[i].hsps[0]
+
+
+
 
             if fullName:
                 gene_name = record.alignments[i].title
             else:
                 gene_name = record.alignments[i].title[record.alignments[0].title.rfind("|")+3:]
 
-            reads[idx].addAlignment(LocalTail(threePrime=threePrime, tailLen=tailLen, tailSeq=tailSeq, gene=gene_name))
+            reads[idx].addAlignment(LocalTail(threePrime=threePrime, tailLen=tailLen, tailSeq=tailSeq, gene=gene_name, score=score))
 
 
     os.remove(XML_results)
     
     return reads
 
-def tailbuildr(reads, out_loc, seq_out=False):
+def tailbuildr(reads, out_loc, seq_out=True):
     """
     creates a .tail file
     """
@@ -183,6 +190,7 @@ def getEnsemblSeqs(ID_list, expand_3prime=50):
   
   if not r.ok: #should add more error handling code here
     r.raise_for_status()
+    raise("Couldn't contact ensembl")
     sys.exit()
 
   out = {}
@@ -209,7 +217,6 @@ def localAligner(args):
         reads = parseFASTQ(file)
 
         queryFormatter(reads, queryFile, rev_comp=args.rev_comp, trim=args.trim) # Formats properly for a BLAST search
-
         print("Aligning...")
         alignBlastDB(queryFile, dbFile, pre+"_temp.xml")
         print("Parsing...")
