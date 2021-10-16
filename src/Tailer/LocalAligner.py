@@ -43,17 +43,17 @@ class LocalTailedRead:
     def trim(self, n: int):
         self.seq = self.seq[:-n]
 
-    def addAlignment(self, localTail):
+    def addAlignment(self, localTail:LocalTail):
         self.potential_tails.append(localTail)
     def pickBestAlignment(self):
         if len(self.potential_tails) == 0: return None
 
-        best = min([x.threePrime for x in self.potential_tails]) # Best are the ones with the best blast score
+        best = max([x.score for x in self.potential_tails]) # Best are the ones with the best blast score
 
         out =[]
 
         for tail in self.potential_tails:
-            if tail.threePrime == best:
+            if tail.score == best:
                 out.append(tail)
         return out   
 
@@ -80,6 +80,7 @@ def buildDBFromEID(EID_list, tempfile="temp.fasta"):
     Take a list of EnsIDs and create a blast database
     """
     fasta_dict = getEnsemblSeqs(EID_list)
+    if not fasta_dict: raise("Couldn't contact Ensembl")
 
     with open(tempfile, 'w') as out_file:
         for key, value in fasta_dict.items():
@@ -106,7 +107,7 @@ def alignBlastDB(query, db, outfile):
     Aligns query to properly formatted blast db
     Outputs a temporary XML file
     """
-    subprocess.call(["blastn", "-db", db, "-query", query, "-out", outfile, "-outfmt", "5", '-max_target_seqs', '50'])
+    subprocess.call(["blastn", "-db", db, "-query", query, "-out", outfile, "-outfmt", "5", '-max_target_seqs', '20'])
 
     return True
 
@@ -116,7 +117,7 @@ def BlastResultsParser(XML_results, reads, expanded_3prime=50, fullName=False):
     Add data to reads object
     """
     records = list(NCBIXML.parse(open(XML_results)))
-
+    
     for record in tqdm(records):
         if len(record.alignments) == 0: continue # skip if there are no alignments
         for i in range(len(record.alignments)):
@@ -130,10 +131,6 @@ def BlastResultsParser(XML_results, reads, expanded_3prime=50, fullName=False):
             threePrime = target_len - sbjct_end - expanded_3prime
             tailLen = query_len - query_end
             tailSeq = reads[idx].seq[query_end:]
-            #test code
-            aln = record.alignments[i].hsps[0]
-
-
 
 
             if fullName:
@@ -148,7 +145,7 @@ def BlastResultsParser(XML_results, reads, expanded_3prime=50, fullName=False):
     
     return reads
 
-def tailbuildr(reads, out_loc, seq_out=True):
+def tailbuildr(reads, out_loc, seq_out=False):
     """
     creates a .tail file
     """
@@ -207,6 +204,7 @@ def localAligner(args):
     queryFile = tempDir.name + "/query.fasta"
     dbFile = tempDir.name + "db.fa"
 
+
     args.eids = args.ensids.split(",")
 
     # Downloads fasta sequences from ensembl and creates BLASTable database
@@ -219,9 +217,10 @@ def localAligner(args):
         queryFormatter(reads, queryFile, rev_comp=args.rev_comp, trim=args.trim) # Formats properly for a BLAST search
         print("Aligning...")
         alignBlastDB(queryFile, dbFile, pre+"_temp.xml")
+
         print("Parsing...")
         reads = BlastResultsParser(pre+"_temp.xml", reads)
-
+        
         tailbuildr(reads, pre+"_tails.csv")
 
 
