@@ -128,7 +128,7 @@ def BlastResultsParser(XML_results, reads, expanded_3prime=50, fullName=False):
             target_len = record.alignments[i].length
             score = record.alignments[i].hsps[0].score
 
-            threePrime = target_len - sbjct_end - expanded_3prime
+            threePrime = sbjct_end - target_len  + expanded_3prime
             tailLen = query_len - query_end
             tailSeq = reads[idx].seq[query_end:]
 
@@ -202,8 +202,8 @@ def localAligner(args):
 
     # temporary locations for query and database
     queryFile = tempDir.name + "/query.fasta"
-    dbFile = tempDir.name + "db.fa"
-
+    #dbFile = tempDir.name + "db.fa"
+    dbFile = "db.fa"
 
     args.eids = args.ensids.split(",")
 
