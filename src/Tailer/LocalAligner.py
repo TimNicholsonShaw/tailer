@@ -171,8 +171,6 @@ def tailbuildr(reads, out_loc, seq_out=False):
                 else:
                     writer.writerow([read.count, out_name, out_name, bestTail[0].threePrime+bestTail[0].tailLen, bestTail[0].tailLen, bestTail[0].tailSeq])
 
-
-    
 def getEnsemblSeqs(ID_list, expand_3prime=50):
   server = "https://rest.ensembl.org"
   ext = "/sequence/id"
@@ -202,8 +200,7 @@ def localAligner(args):
 
     # temporary locations for query and database
     queryFile = tempDir.name + "/query.fasta"
-    #dbFile = tempDir.name + "db.fa"
-    dbFile = "db.fa"
+    dbFile = tempDir.name + "db.fa"
 
     args.eids = args.ensids.split(",")
 
