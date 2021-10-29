@@ -159,6 +159,7 @@ def makeAlignmentDict(handledBAM):
     
     # places all alignments for a particular read in a list associated with that read name
     for aln in handledBAM:
+        if aln.is_read1: continue
         alignment_dict[aln.query_name] = alignment_dict.get(aln.query_name, []) + [aln]
     #the handled bam is used up after this
     return alignment_dict
