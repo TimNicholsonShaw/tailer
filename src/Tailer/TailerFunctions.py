@@ -142,7 +142,7 @@ def getOrMakeGTFdb(GTForDB):
     #Reduce GTF file to just genes
     with open(GTForDB, "r") as gtffile, open(pre+"_temp.gtf", 'w') as tempfile: #creates a temporary gtf file
         for line in gtffile:
-            if line.startswith("#!"): continue #skips comments
+            if line.startswith("#"): continue #skips comments
 
             if line.split("\t")[2] == "gene":
                 tempfile.write(line)

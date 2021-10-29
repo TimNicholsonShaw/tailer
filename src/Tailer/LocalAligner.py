@@ -220,7 +220,6 @@ def localAligner(args):
         
         tailbuildr(reads, pre+"_tails.csv")
 
-
 def localFastaAligner(args):
     tempDir = tempfile.TemporaryDirectory() #Create temporary directory that will be deleted on exit
 
