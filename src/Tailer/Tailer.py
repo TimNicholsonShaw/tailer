@@ -23,7 +23,7 @@ def runGlobal(args):
         alignments = tf.getHandleOnIndexedBam(file) 
 
         # convert alignments to a more easily handled dict
-        aln_dict = tf.makeAlignmentDict(alignments) 
+        aln_dict = tf.makeAlignmentDict(alignments, args.read) 
 
         print("Calculating tails...")
         # tails everything and creates a dictionary of tailed reads
@@ -49,6 +49,7 @@ def main():
     parser.add_argument("-x", "--trim", default=0, type=int, help="trim off x nucleotides from end [Helper for local only]", metavar="")
     parser.add_argument("-s", "--sequence", action="store_true", help="for debugging, outputs nucleotide sequences to file")
     parser.add_argument("files", nargs="+", help="SAM or BAM formatted files | FASTA/Q for local mode")
+    parser.add_argument("-read", "--read", default=2, type=int, help="Which read to use")
 
 
     args = parser.parse_args()

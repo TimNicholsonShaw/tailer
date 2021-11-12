@@ -153,14 +153,19 @@ def getOrMakeGTFdb(GTForDB):
 
     return db
 
-def makeAlignmentDict(handledBAM):
+def makeAlignmentDict(handledBAM, read=2):
     """Organizes alignments by read in a dict"""
     alignment_dict = {}
     
     # places all alignments for a particular read in a list associated with that read name
-    for aln in handledBAM:
-        if aln.is_read1: continue
-        alignment_dict[aln.query_name] = alignment_dict.get(aln.query_name, []) + [aln]
+    if read == 2:
+        for aln in handledBAM:
+            if aln.is_read1: continue
+            alignment_dict[aln.query_name] = alignment_dict.get(aln.query_name, []) + [aln]
+    elif read == 1:
+        for aln in handledBAM:
+            if aln.is_read2: continue
+            alignment_dict[aln.query_name] = alignment_dict.get(aln.query_name, []) + [aln]
     #the handled bam is used up after this
     return alignment_dict
 
