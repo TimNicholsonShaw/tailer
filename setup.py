@@ -7,7 +7,7 @@ long_description = (here / 'README.md').read_text(encoding='utf-8')
 
 setup(
     name='jla-tailer', 
-    version='0.1.8',
+    version='0.1.9',
     description='Tool to find 3\' tailing of non-coding RNAs',
     long_description=long_description,
     long_description_content_type='text/markdown', 

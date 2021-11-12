@@ -27,7 +27,7 @@ def runGlobal(args):
 
         print("Calculating tails...")
         # tails everything and creates a dictionary of tailed reads
-        tailedReads = tf.makeTailedReadsDict(aln_dict, db)
+        tailedReads = tf.makeTailedReadsDict(aln_dict, db, args.rev_comp)
 
         # write to file
         tf.tailedReadsToTailFile(tailedReads, pre + "_tail.csv", threeEndThresh=args.threshold, seq_out=args.sequence)
@@ -45,7 +45,7 @@ def main():
     group.add_argument("-e", "--ensids", help="Ensembl IDs of genes to query, comma separated, no space (Local Mode Only), excludes -a", metavar="")
     group.add_argument("-f", "--fasta", help="FASTA file to act as a reference [Local Only]", metavar="")
     parser.add_argument("-t", "--threshold", type=int, default=100, help="Maximum distance from mature end to be included (default=100)", metavar="")
-    parser.add_argument("-r", "--rev_comp", action="store_true",help="Reverse complement reads [Helper for Local only]")
+    parser.add_argument("-r", "--rev_comp", action="store_true",help="Reverse complement reads")
     parser.add_argument("-x", "--trim", default=0, type=int, help="trim off x nucleotides from end [Helper for local only]", metavar="")
     parser.add_argument("-s", "--sequence", action="store_true", help="for debugging, outputs nucleotide sequences to file")
     parser.add_argument("files", nargs="+", help="SAM or BAM formatted files | FASTA/Q for local mode")
