@@ -159,6 +159,8 @@ def getOrMakeGTFdb(GTForDB):
     pre, ext = os.path.splitext(GTForDB) #Get extension and filename
     if ext == ".db":
         return gffutils.FeatureDB(GTForDB)
+    if os.path.exists(pre+".db"): # If the database has already been made, it just queries that one
+        return gffutils.FeatureDB(GTForDB) # prevents clashes when running multiple
     
     
     #Reduce GTF file to just genes

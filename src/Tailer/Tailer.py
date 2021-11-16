@@ -1,5 +1,6 @@
 import argparse
 import os
+import tempfile
 try: 
     import Tailer.TailerFunctions as tf #hmm, something is weird here, here's a workaround
     import Tailer.LocalAligner as la
@@ -10,6 +11,8 @@ except:
 
 def runGlobal(args):
         # make sql database from gtf, using gene annotations, one time
+    tempDir = tempfile.TemporaryDirectory() #Create temporary directory that will be deleted on exit
+
     db = tf.getOrMakeGTFdb(args.annotation)
 
     for file in args.files:
