@@ -216,7 +216,7 @@ def localAligner(args):
         alignBlastDB(queryFile, dbFile, pre+"_temp.xml")
 
         print("Parsing...")
-        reads = BlastResultsParser(pre+"_temp.xml", reads)
+        reads = BlastResultsParser(pre+"_temp.xml", reads, expanded_3prime=args.mature+50)
         
         tailbuildr(reads, pre+"_tails.csv")
 
@@ -238,7 +238,7 @@ def localFastaAligner(args):
         print("Aligning...")
         alignBlastDB(queryFile, args.fasta, pre+"_temp.xml")
         print("Parsing...")
-        reads = BlastResultsParser(pre+"_temp.xml", reads, fullName=True, expanded_3prime=0)
+        reads = BlastResultsParser(pre+"_temp.xml", reads, fullName=True, expanded_3prime=args.mature)
 
         tailbuildr(reads, pre+"_tails.csv")
     

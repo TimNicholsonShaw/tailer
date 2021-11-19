@@ -33,7 +33,7 @@ def runGlobal(args):
         tailedReads = tf.makeTailedReadsDict(aln_dict, db, args.rev_comp)
 
         # write to file
-        tf.tailedReadsToTailFile(tailedReads, pre + "_tail.csv", threeEndThresh=args.threshold, seq_out=args.sequence)
+        tf.tailedReadsToTailFile(tailedReads, pre + "_tail.csv", threeEndThresh=args.threshold, seq_out=args.sequence, mature_end=args.mature)
 
         print("Wrote " + pre + "_tail.csv " + " to disk.")
 
@@ -53,6 +53,7 @@ def main():
     parser.add_argument("-s", "--sequence", action="store_true", help="for debugging, outputs nucleotide sequences to file")
     parser.add_argument("files", nargs="+", help="SAM or BAM formatted files | FASTA/Q for local mode")
     parser.add_argument("-read", "--read", default=2, type=int, help="Which read to use")
+    parser.add_argument("-m", "--mature", default=0, type=int, help="Mature end adjustment, most useful for custom fastas in local mode.")
 
 
     args = parser.parse_args()
