@@ -241,4 +241,3 @@ def localFastaAligner(args):
         reads = BlastResultsParser(pre+"_temp.xml", reads, fullName=True, expanded_3prime=args.mature)
 
         tailbuildr(reads, pre+"_tails.csv")
-    

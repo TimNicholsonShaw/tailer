@@ -160,7 +160,7 @@ def getOrMakeGTFdb(GTForDB):
     if ext == ".db":
         return gffutils.FeatureDB(GTForDB)
     if os.path.exists(pre+".db"): # If the database has already been made, it just queries that one
-        return gffutils.FeatureDB(GTForDB) # prevents clashes when running multiple
+        return gffutils.FeatureDB(pre+".db") # prevents clashes when running multiple
     
     
     #Reduce GTF file to just genes
@@ -252,8 +252,12 @@ def tailedReadsToTailFile(TailedReads, outLoc, threeEndThresh = 100, seq_out=Fal
         if not bestTails: continue
 
         # Joins ensIDs/geneNames together for reads with multiple best tails
-        ensIDs = "|".join([str(x.geneID) for x in bestTails])
-        geneNames = "|".join([str(x.gene) for x in bestTails])
+        #ensIDs = "|".join([str(x.geneID) for x in bestTails])
+        ensIDs = sorted([str(x.geneID) for x in bestTails])
+        ensIDs = "|".join(ensIDs)
+        #geneNames = "|".join([str(x.gene) for x in bestTails])
+        geneNames = sorted([str(x.gene) for x in bestTails])
+        geneNames = "|".join(geneNames)
 
         # If it's further than this threshold from the mature end, it's probably spurious
         if bestTails:
