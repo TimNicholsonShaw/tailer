@@ -241,3 +241,29 @@ def localFastaAligner(args):
         reads = BlastResultsParser(pre+"_temp.xml", reads, fullName=True, expanded_3prime=args.mature)
 
         tailbuildr(reads, pre+"_tails.csv")
+
+def getHGNC(ID_list):
+  server = "https://rest.ensembl.org"
+  ext = "/xrefs/id/"
+  headers={"Content-Type" : "application/json"}
+  
+  out = {}
+
+  for id in ID_list:
+    r = requests.get(server+ext+id,headers=headers, params={"external_db":"HGNC"}) 
+    if not r.ok: #should add more error handling code here
+        r.raise_for_status()
+        raise("Couldn't contact ensembl")
+        sys.exit()
+    try:
+        out[id] = json.loads(r.content)[0]["display_id"]
+    except:
+        out[id] = "NA"
+
+  return out
+        
+    
+
+  return(json.loads(r.content)[0]['display_id'])
+if __name__ == "__main__":
+    print(getHGNC(["ENSG00000252481"]))
