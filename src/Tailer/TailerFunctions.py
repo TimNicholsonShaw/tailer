@@ -291,7 +291,7 @@ def tailedReadsToTailFile(TailedReads, outLoc, threeEndThresh = 100, seq_out=Fal
 
     #Sort by count
     key_column = 0
-    if seq_out: key_column = 2
+    if seq_out: key_column = 1
     out = sorted(out, key=lambda x:x[key_column], reverse=True)
 
     # Add header
