@@ -14,12 +14,15 @@ except:
     import TailerFunctions as tf
 
 class LocalTail:
-    def __init__(self, threePrime=None, tailLen=None, tailSeq=None, gene=None, score=None):
+    def __init__(self, threePrime=None, tailLen=None, tailSeq=None, gene=None, score=None, eid=None):
         self.threePrime = threePrime
         self.tailLen = tailLen
         self.tailSeq = tailSeq
         self.gene = gene
         self.score = score
+        self.eid = eid
+
+        if not self.gene: self.gene=self.id
     
 class LocalTailedRead:
 
@@ -111,7 +114,7 @@ def alignBlastDB(query, db, outfile):
 
     return True
 
-def BlastResultsParser(XML_results, reads, expanded_3prime=50, fullName=False):
+def BlastResultsParser(XML_results, reads, expanded_3prime=50, symbol_dict=None):
     """
     Parses XML output from blastn
     Add data to reads object
@@ -132,13 +135,16 @@ def BlastResultsParser(XML_results, reads, expanded_3prime=50, fullName=False):
             tailLen = query_len - query_end
             tailSeq = reads[idx].seq[query_end:]
 
+            eid = record.alignments[i].title[record.alignments[0].title.rfind("|")+3:]
 
-            if fullName:
-                gene_name = record.alignments[i].title
+
+            if symbol_dict:
+                gene_name = symbol_dict[eid]
             else:
-                gene_name = record.alignments[i].title[record.alignments[0].title.rfind("|")+3:]
+                gene_name = "NA"
 
-            reads[idx].addAlignment(LocalTail(threePrime=threePrime, tailLen=tailLen, tailSeq=tailSeq, gene=gene_name, score=score))
+
+            reads[idx].addAlignment(LocalTail(threePrime=threePrime, tailLen=tailLen, tailSeq=tailSeq, gene=gene_name, score=score, eid=eid))
 
 
     os.remove(XML_results)
@@ -164,12 +170,14 @@ def tailbuildr(reads, out_loc, seq_out=False):
                 bestTail = read.pickBestAlignment()
                 out_name = [x.gene for x in bestTail]
                 out_name="|".join(out_name)
+                eid_list = [x.eid for x in bestTail]
+                eid_list = "|".join(eid_list)
 
 
                 if seq_out:
-                    writer.writerow([read.seq, read.count, out_name, out_name, bestTail[0].threePrime+bestTail[0].tailLen, bestTail[0].tailLen, bestTail[0].tailSeq])
+                    writer.writerow([read.seq, read.count, eid_list, out_name, bestTail[0].threePrime+bestTail[0].tailLen, bestTail[0].tailLen, bestTail[0].tailSeq])
                 else:
-                    writer.writerow([read.count, out_name, out_name, bestTail[0].threePrime+bestTail[0].tailLen, bestTail[0].tailLen, bestTail[0].tailSeq])
+                    writer.writerow([read.count, eid_list, out_name, bestTail[0].threePrime+bestTail[0].tailLen, bestTail[0].tailLen, bestTail[0].tailSeq])
 
 def getEnsemblSeqs(ID_list, expand_3prime=50):
   server = "https://rest.ensembl.org"
@@ -186,7 +194,6 @@ def getEnsemblSeqs(ID_list, expand_3prime=50):
   if not r.ok: #should add more error handling code here
     r.raise_for_status()
     raise("Couldn't contact ensembl")
-    sys.exit()
 
   out = {}
   
@@ -206,6 +213,7 @@ def localAligner(args):
 
     # Downloads fasta sequences from ensembl and creates BLASTable database
     buildDBFromEID(args.eids, dbFile) 
+    symbol_dict = getHGNC(args.eids)
 
     for file in args.files:
         pre, ext = os.path.splitext(file) #Get extension and filename
@@ -216,7 +224,7 @@ def localAligner(args):
         alignBlastDB(queryFile, dbFile, pre+"_temp.xml")
 
         print("Parsing...")
-        reads = BlastResultsParser(pre+"_temp.xml", reads, expanded_3prime=args.mature+50)
+        reads = BlastResultsParser(pre+"_temp.xml", reads, expanded_3prime=args.mature+50, symbol_dict=symbol_dict)
         
         tailbuildr(reads, pre+"_tails.csv")
 
@@ -263,7 +271,5 @@ def getHGNC(ID_list):
   return out
         
     
-
-  return(json.loads(r.content)[0]['display_id'])
 if __name__ == "__main__":
-    print(getHGNC(["ENSG00000252481"]))
+    buildDBFromEID(["ENSG00000252481"])
