@@ -226,7 +226,7 @@ def localAligner(args):
         print("Parsing...")
         reads = BlastResultsParser(pre+"_temp.xml", reads, expanded_3prime=args.mature+50, symbol_dict=symbol_dict)
         
-        tailbuildr(reads, pre+"_tails.csv")
+        tailbuildr(reads, pre+"_tails.csv", seq_out=args.sequence)
 
 def localFastaAligner(args):
     tempDir = tempfile.TemporaryDirectory() #Create temporary directory that will be deleted on exit
