@@ -185,10 +185,12 @@ def makeAlignmentDict(handledBAM, read=2):
     if read == 2:
         for aln in handledBAM:
             if aln.is_read1: continue
+            if aln.is_unmapped: continue # handle unmapped reads
             alignment_dict[aln.query_name] = alignment_dict.get(aln.query_name, []) + [aln]
     elif read == 1:
         for aln in handledBAM:
             if aln.is_read2: continue
+            if aln.is_unmapped: continue # handle unmapped reads
             alignment_dict[aln.query_name] = alignment_dict.get(aln.query_name, []) + [aln]
     #the handled bam is used up after this
     return alignment_dict
@@ -200,7 +202,6 @@ def getOverlappingGenes(aligned_read, gtf_db):
     :param gtf_db               previously generated and loaded SQL db
     :return                     list of gffutils feature object genes
     """
-    
     # Set strand of read (illumina reads are reversed)
     strand = "-"
     if aligned_read.is_reverse == True: strand="+"

@@ -14,7 +14,7 @@ class TestTailer(unittest.TestCase):
         self.alignments = TailerFunctions.getHandleOnIndexedBam(currentdir+"/testSam.sam")
         self.db = TailerFunctions.getOrMakeGTFdb(currentdir+"/test.gtf")
         self.aln_dict = TailerFunctions.makeAlignmentDict(self.alignments)
-        self.TailedReads = TailerFunctions.makeTailedReadsDict(self.aln_dict, self.db)
+        self.TailedReads = TailerFunctions.makeTailedReadsDict(self.aln_dict, self.db, rev_comp=False)
 
     def test_getHandleOnIndexedBam(self):
         #does it create all the files it's supposed to
@@ -61,7 +61,7 @@ class TestTailer(unittest.TestCase):
         self.assertEqual(gene['gene_id'][0], 'ENSG00000230021')
         self.assertTrue(isinstance(gene, gffutils.feature.Feature))
 
-    def test_makeTailedreadsDict(self):
+    def test_makeTailedreadsDict(self, rev_comp=False):
 
         #prove it collapsed reads
         self.assertTrue(len(self.aln_dict) > len(self.TailedReads))
