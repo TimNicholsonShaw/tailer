@@ -5,3 +5,4 @@ tests/*.csv
 .DS_Store
 *.ipynb
 *.fastq
+miRNA_test*

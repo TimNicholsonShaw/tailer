@@ -4,10 +4,12 @@ import tempfile
 try: 
     import Tailer.TailerFunctions as tf #hmm, something is weird here, here's a workaround
     import Tailer.LocalAligner as la
+    import Tailer.miRNA_tailer as mi
     # if someone smarter knows what I'm doing wrong, let me know: timnicholsonshaw@gmail.com
 except:
     import TailerFunctions as tf
     import LocalAligner as la
+    import miRNA_tailer as mi
 
 def runGlobal(args):
         # make sql database from gtf, using gene annotations, one time
@@ -55,10 +57,13 @@ def main():
     parser.add_argument("-read", "--read", default=2, type=int, help="Which read to use")
     parser.add_argument("-m", "--mature", default=0, type=int, help="Mature end adjustment, most useful for custom fastas in local mode.")
 
+    group.add_argument("-miRNA","--miRNA", action="store_true", help="In development: tail miRNAs from alignment data only")
+    parser.add_argument("-lpad", "--lpad", type=int, default=0, help="Extra 5' sequence in the miRNA reference fasta aligned to. miRNA only")
+    parser.add_argument("-rpad", "--rpad", type=int, default=0, help="Extra 5' sequence in the miRNA reference fasta aligned to. miRNA only")
+
 
     args = parser.parse_args()
 
-    
     if args.annotation:
         print("Running in global mode")
         runGlobal(args)
@@ -70,6 +75,10 @@ def main():
     elif args.fasta:
         print("Running in local mode with reference FASTA")
         la.localFastaAligner(args)
+
+    elif args.miRNA:
+        print("Running miRNA analysis")
+        mi.run_miRNA_tailer(args)
 
     else:
         raise Exception("Something has gone bafflingly wrong with your arguments. This shouldn't be possible. Kudos.")
