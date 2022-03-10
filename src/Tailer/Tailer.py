@@ -58,7 +58,6 @@ def main():
     parser.add_argument("-m", "--mature", default=0, type=int, help="Mature end adjustment, most useful for custom fastas in local mode.")
 
     group.add_argument("-miRNA","--miRNA", action="store_true", help="In development: tail miRNAs from alignment data only")
-    parser.add_argument("-lpad", "--lpad", type=int, default=0, help="Extra 5' sequence in the miRNA reference fasta aligned to. miRNA only")
     parser.add_argument("-rpad", "--rpad", type=int, default=0, help="Extra 5' sequence in the miRNA reference fasta aligned to. miRNA only")
 
 
