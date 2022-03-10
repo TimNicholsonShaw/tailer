@@ -205,6 +205,7 @@ def getOverlappingGenes(aligned_read, gtf_db):
     # Set strand of read (illumina reads are reversed)
     strand = "-"
     if aligned_read.is_reverse == True: strand="+"
+
     
     return (gtf_db.region(seqid=aligned_read.reference_name, 
     start=aligned_read.pos, 
