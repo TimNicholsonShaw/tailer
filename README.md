@@ -60,3 +60,16 @@ Optional arguments
     - Output sequence in the tail file. Useful for debugging.
 
 
+miRNA tailing (in development)
+```bash
+Tailer --miRNA [sam files]
+```
+
+Determines tails using an alignment file (SAM/BAM) that was aligned to a fasta genome of mature miRNAs
+
+Optional arguments
+
+* ``--rpad [int, default=0]``
+    - Number of downstream nucleotides added to distinguish between post-transcriptional and genome-encoded tails
+
+
